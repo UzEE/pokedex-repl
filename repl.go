@@ -5,24 +5,24 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 func startRepl() {
-	input := make(chan string)
 	commands := loadCommands()
 
 	for {
 		fmt.Printf("Pokedex > ")
-		go readInput(input)
+		input := readInput()
 
-		err := handleCommand(<-input, commands)
+		err := handleCommand(input, commands)
 		if err != nil {
 			log.Println(err)
 		}
 	}
 }
 
-func readInput(input chan<- string) {
+func readInput() string {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 
@@ -31,7 +31,12 @@ func readInput(input chan<- string) {
 		log.Fatal(err)
 	}
 
-	input <- scanner.Text()
+	return sanitizeInput(scanner.Text())
+}
+
+func sanitizeInput(input string) string {
+	output := strings.ToLower(input)
+	return strings.TrimSpace(output)
 }
 
 func loadCommands() map[string]command {
@@ -56,7 +61,7 @@ func handleCommand(cmd string, commands map[string]command) error {
 
 	c, ok := commands[cmd]
 	if !ok {
-		fmt.Printf("Command %s not found. Please type \"help\" to see a list of supported commands.\n", cmd)
+		fmt.Printf("Command \"%s\" not found. Please type \"help\" to see a list of supported commands.\n", cmd)
 		return nil
 	}
 
