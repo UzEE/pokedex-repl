@@ -8,14 +8,22 @@ import (
 	"strings"
 )
 
+type PagedResourceList struct {
+	Count    int             `json:"count"`
+	Next     *string         `json:"next"`
+	Previous *string         `json:"previous"`
+	Results  []NamedResource `json:"results"`
+}
+
 func startRepl() {
 	commands := loadCommands()
+	config := &config{}
 
 	for {
-		fmt.Printf("Pokedex > ")
+		fmt.Printf("Pokédex> ")
 		input := readInput()
 
-		err := handleCommand(input, commands)
+		err := handleCommand(input, commands, config)
 		if err != nil {
 			log.Println(err)
 		}
@@ -46,15 +54,30 @@ func loadCommands() map[string]command {
 			description: "Displays a help message",
 			handler:     helpCommand,
 		},
+		"map": {
+			name:        "map",
+			description: "Display the names of next 20 locations in the Pokémon world",
+			handler:     mapCommand,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Display the names of previous 20 locations in the Pokémon world",
+			handler:     mapBCommand,
+		},
 		"exit": {
 			name:        "exit",
 			description: "Exit the Pokedex",
 			handler:     exitCommand,
 		},
+		"exp": {
+			name:        "exp",
+			description: "Experiment command to test things out",
+			handler:     expCommand,
+		},
 	}
 }
 
-func handleCommand(cmd string, commands map[string]command) error {
+func handleCommand(cmd string, commands map[string]command, config *config) error {
 	if cmd == "" {
 		return nil
 	}
@@ -65,5 +88,5 @@ func handleCommand(cmd string, commands map[string]command) error {
 		return nil
 	}
 
-	return c.handler()
+	return c.handler(config)
 }
