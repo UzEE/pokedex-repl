@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 )
@@ -11,6 +10,16 @@ func (c *Client) ListLocationArea(url *string) (PagedResourceList, error) {
 
 	if url != nil {
 		reqUrl = *url
+	}
+
+	cached, found := c.cache.Get(reqUrl)
+	if found {
+		list, err := unmarshalJSON[PagedResourceList](cached)
+		if err != nil {
+			return PagedResourceList{}, fmt.Errorf("failed to cast cache value to PagedResourceList")
+		}
+
+		return list, nil
 	}
 
 	resp, err := c.client.Get(reqUrl)
@@ -30,8 +39,9 @@ func (c *Client) ListLocationArea(url *string) (PagedResourceList, error) {
 		return PagedResourceList{}, err
 	}
 
-	list := PagedResourceList{}
-	err = json.Unmarshal(body, &list)
+	c.cache.Add(reqUrl, body)
+
+	list, err := unmarshalJSON[PagedResourceList](body)
 
 	return list, err
 }

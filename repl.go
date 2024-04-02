@@ -13,6 +13,7 @@ import (
 func startRepl() {
 	commands := loadCommands()
 	client := api.NewClient()
+
 	config := &config{
 		client: &client,
 	}
@@ -64,7 +65,7 @@ func loadCommands() map[string]command {
 		},
 		"exit": {
 			name:        "exit",
-			description: "Exit the Pokedex",
+			description: "Exit the Pokédex",
 			handler:     exitCommand,
 		},
 		"exp": {
