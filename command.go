@@ -14,5 +14,6 @@ type config struct {
 type command struct {
 	name        string
 	description string
-	handler     func(c *config) error
+	usage       string
+	handler     func(c *config, args ...string) error
 }

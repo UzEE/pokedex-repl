@@ -5,8 +5,8 @@ import (
 	"io"
 )
 
-func (c *Client) ListLocationArea(url *string) (PagedResourceList, error) {
-	reqUrl := "https://pokeapi.co/api/v2/location-area"
+func (c *Client) ListLocationAreas(url *string) (PagedResourceList, error) {
+	reqUrl := fmt.Sprintf("%s/location-area", baseURL)
 
 	if url != nil {
 		reqUrl = *url

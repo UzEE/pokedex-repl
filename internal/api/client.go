@@ -7,6 +7,8 @@ import (
 	"github.com/UzEE/pokedexcli/internal/cache"
 )
 
+const baseURL = "https://pokeapi.co/api/v2"
+
 type Client struct {
 	client http.Client
 	cache  cache.Cache
@@ -15,6 +17,6 @@ type Client struct {
 func NewClient() Client {
 	return Client{
 		client: http.Client{},
-		cache:  cache.NewCache(10 * time.Second),
+		cache:  cache.NewCache(60 * time.Second),
 	}
 }

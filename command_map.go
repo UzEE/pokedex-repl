@@ -7,7 +7,7 @@ import (
 	"github.com/UzEE/pokedexcli/internal/api"
 )
 
-func mapCommand(c *config) error {
+func mapCommand(c *config, _ ...string) error {
 	locations, err := makeRequest(c.Next, *c.client)
 	if err != nil {
 		return err
@@ -18,7 +18,7 @@ func mapCommand(c *config) error {
 	return nil
 }
 
-func mapBCommand(c *config) error {
+func mapBCommand(c *config, _ ...string) error {
 	if c.Previous == nil {
 		return errors.New("no previous locations. Use \"map\" command to see the next locations")
 	}
@@ -37,7 +37,7 @@ func makeRequest(url *string, client api.Client) (api.PagedResourceList, error) 
 	fmt.Printf("Fetching...")
 	defer fmt.Printf("\033[2K\r")
 
-	return client.ListLocationArea(url)
+	return client.ListLocationAreas(url)
 }
 
 func handleResponse(list api.PagedResourceList) {
