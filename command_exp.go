@@ -3,10 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/UzEE/pokedexcli/internal/api"
 )
 
 func expCommand(_ *config) error {
-	resource := NamedResource{
+	resource := api.NamedResource{
 		Name: "test",
 		URL:  "https://pokeapi.co/api/v2/location-area/?limit=20",
 	}
@@ -104,7 +106,7 @@ func expCommand(_ *config) error {
 		}
 	]`)
 
-	namedList := []NamedResource{}
+	namedList := []api.NamedResource{}
 	err = json.Unmarshal(data, &namedList)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal data: %v", err)

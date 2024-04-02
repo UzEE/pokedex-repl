@@ -6,18 +6,16 @@ import (
 	"log"
 	"os"
 	"strings"
-)
 
-type PagedResourceList struct {
-	Count    int             `json:"count"`
-	Next     *string         `json:"next"`
-	Previous *string         `json:"previous"`
-	Results  []NamedResource `json:"results"`
-}
+	"github.com/UzEE/pokedexcli/internal/api"
+)
 
 func startRepl() {
 	commands := loadCommands()
-	config := &config{}
+	client := api.NewClient()
+	config := &config{
+		client: &client,
+	}
 
 	for {
 		fmt.Printf("Pokédex> ")

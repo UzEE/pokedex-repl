@@ -1,76 +1,52 @@
 package main
 
 import (
-	"encoding/json"
+	"errors"
 	"fmt"
-	"io"
-	"log"
-	"net/http"
+
+	"github.com/UzEE/pokedexcli/internal/api"
 )
 
-type NamedResource struct {
-	Name string `json:"name"`
-	URL  string `json:"url"`
-}
-
 func mapCommand(c *config) error {
-	url := "https://pokeapi.co/api/v2/location-area"
-
-	if c.Next != nil {
-		url = *c.Next
-	} else {
-		fmt.Println("No next locations. Use \"mapb\" command to see the previous locations.")
-		return nil
+	locations, err := makeRequest(c.Next, *c.client)
+	if err != nil {
+		return err
 	}
 
-	return handleMapCommand(url, c)
+	handleResponse(locations)
+	updatePages(c, locations)
+	return nil
 }
 
 func mapBCommand(c *config) error {
-	var url string
-
-	if c.Previous != nil {
-		url = *c.Previous
-	} else {
-		fmt.Println("No previous locations. Use \"map\" command to see the next locations.")
-		return nil
+	if c.Previous == nil {
+		return errors.New("no previous locations. Use \"map\" command to see the next locations")
 	}
 
-	return handleMapCommand(url, c)
+	locations, err := makeRequest(c.Previous, *c.client)
+	if err != nil {
+		return err
+	}
+
+	handleResponse(locations)
+	updatePages(c, locations)
+	return nil
 }
 
-func handleMapCommand(url string, c *config) error {
-	fmt.Printf("Loading...")
-	res, err := http.Get(url)
-	fmt.Printf("\033[2K\r")
+func makeRequest(url *string, client api.Client) (api.PagedResourceList, error) {
+	fmt.Printf("Fetching...")
+	defer fmt.Printf("\033[2K\r")
 
-	if err != nil {
-		log.Printf("Failed to fetch map data: %v", err)
-		return err
+	return client.ListLocationArea(url)
+}
+
+func handleResponse(list api.PagedResourceList) {
+	for _, loc := range list.Results {
+		fmt.Println(loc.Name)
 	}
+}
 
-	defer res.Body.Close()
-
-	body, err := io.ReadAll(res.Body)
-
-	if res.StatusCode >= 400 {
-		log.Printf("Failed to fetch map data: %s", body)
-		return fmt.Errorf("failed to fetch map data. Status Code: %d", res.StatusCode)
-	}
-
-	if err != nil {
-		log.Printf("Failed to read map data: %v", err)
-		return err
-	}
-
-	list := PagedResourceList{}
-	err = json.Unmarshal(body, &list)
-
-	if err != nil {
-		log.Printf("Failed to unmarshal map data: %v", err)
-		return err
-	}
-
+func updatePages(c *config, list api.PagedResourceList) {
 	if list.Next != nil {
 		next := *list.Next
 		c.Next = &next
@@ -84,10 +60,4 @@ func handleMapCommand(url string, c *config) error {
 	} else {
 		c.Previous = nil
 	}
-
-	for _, loc := range list.Results {
-		fmt.Println(loc.Name)
-	}
-
-	return nil
 }
