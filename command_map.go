@@ -35,7 +35,7 @@ func mapBCommand(c *config, _ ...string) error {
 
 func makeRequest(url *string, client api.Client) (api.PagedResourceList, error) {
 	fmt.Printf("Fetching...")
-	defer fmt.Printf("\033[2K\r")
+	defer fmt.Printf("\033[2K\r\n")
 
 	return client.ListLocationAreas(url)
 }
