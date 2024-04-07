@@ -3,9 +3,11 @@ package api
 import (
 	"fmt"
 	"io"
+
+	"github.com/UzEE/pokedexcli/internal/api/types"
 )
 
-func (c *Client) ListLocationAreas(url *string) (PagedResourceList, error) {
+func (c *Client) ListLocationAreas(url *string) (types.PagedResourceList, error) {
 	reqUrl := fmt.Sprintf("%s/location-area", baseURL)
 
 	if url != nil {
@@ -14,9 +16,9 @@ func (c *Client) ListLocationAreas(url *string) (PagedResourceList, error) {
 
 	cached, found := c.cache.Get(reqUrl)
 	if found {
-		list, err := unmarshalJSON[PagedResourceList](cached)
+		list, err := unmarshalJSON[types.PagedResourceList](cached)
 		if err != nil {
-			return PagedResourceList{}, fmt.Errorf("failed to cast cache value to PagedResourceList")
+			return types.PagedResourceList{}, fmt.Errorf("failed to cast cache value to PagedResourceList")
 		}
 
 		return list, nil
@@ -24,7 +26,7 @@ func (c *Client) ListLocationAreas(url *string) (PagedResourceList, error) {
 
 	resp, err := c.client.Get(reqUrl)
 	if err != nil {
-		return PagedResourceList{}, err
+		return types.PagedResourceList{}, err
 	}
 
 	defer resp.Body.Close()
@@ -32,16 +34,16 @@ func (c *Client) ListLocationAreas(url *string) (PagedResourceList, error) {
 	body, err := io.ReadAll(resp.Body)
 
 	if resp.StatusCode >= 400 {
-		return PagedResourceList{}, fmt.Errorf("failed to fetch map data. Status Code: %d", resp.StatusCode)
+		return types.PagedResourceList{}, fmt.Errorf("failed to fetch map data. Status Code: %d", resp.StatusCode)
 	}
 
 	if err != nil {
-		return PagedResourceList{}, err
+		return types.PagedResourceList{}, err
 	}
 
 	c.cache.Add(reqUrl, body)
 
-	list, err := unmarshalJSON[PagedResourceList](body)
+	list, err := unmarshalJSON[types.PagedResourceList](body)
 
 	return list, err
 }

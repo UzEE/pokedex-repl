@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/UzEE/pokedexcli/internal/api"
+	"github.com/UzEE/pokedexcli/internal/api/types"
 )
 
 func mapCommand(c *config, _ ...string) error {
@@ -33,20 +34,20 @@ func mapBCommand(c *config, _ ...string) error {
 	return nil
 }
 
-func makeRequest(url *string, client api.Client) (api.PagedResourceList, error) {
+func makeRequest(url *string, client api.Client) (types.PagedResourceList, error) {
 	fmt.Printf("Fetching...")
-	defer fmt.Printf("\033[2K\r\n")
+	defer fmt.Printf("\033[2K\r")
 
 	return client.ListLocationAreas(url)
 }
 
-func handleResponse(list api.PagedResourceList) {
+func handleResponse(list types.PagedResourceList) {
 	for _, loc := range list.Results {
 		fmt.Println(loc.Name)
 	}
 }
 
-func updatePages(c *config, list api.PagedResourceList) {
+func updatePages(c *config, list types.PagedResourceList) {
 	if list.Next != nil {
 		next := *list.Next
 		c.Next = &next

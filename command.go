@@ -4,6 +4,9 @@ import (
 	"fmt"
 
 	"github.com/UzEE/pokedexcli/internal/api"
+	"github.com/UzEE/pokedexcli/internal/api/types/location"
+	"github.com/UzEE/pokedexcli/internal/api/types/pokemon"
+	"github.com/UzEE/pokedexcli/internal/api/types/species"
 )
 
 type config struct {
@@ -11,6 +14,10 @@ type config struct {
 
 	Next     *string
 	Previous *string
+
+	currentArea location.LocationArea
+	pokedex     map[string]species.PokemonSpecies
+	box         []pokemon.Pokemon
 }
 
 type command struct {

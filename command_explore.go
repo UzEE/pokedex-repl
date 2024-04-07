@@ -27,5 +27,7 @@ func exploreCommand(c *config, args ...string) error {
 		fmt.Printf(" - %s\n", encounter.Pokemon.Name)
 	}
 
+	c.currentArea = area
+
 	return nil
 }
