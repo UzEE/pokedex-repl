@@ -9,7 +9,6 @@ import (
 
 	"github.com/UzEE/pokedexcli/internal/api"
 	"github.com/UzEE/pokedexcli/internal/api/types/pokemon"
-	"github.com/UzEE/pokedexcli/internal/api/types/species"
 )
 
 func startRepl() {
@@ -18,7 +17,7 @@ func startRepl() {
 
 	config := &config{
 		client:  &client,
-		pokedex: make(map[string]species.PokemonSpecies),
+		pokedex: make(Pokedex),
 		box:     make([]pokemon.Pokemon, 0, 30),
 	}
 

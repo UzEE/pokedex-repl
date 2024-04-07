@@ -1,6 +1,9 @@
 package pokemon
 
-import "github.com/UzEE/pokedexcli/internal/api/types"
+import (
+	"github.com/UzEE/pokedexcli/internal/api/types"
+	"github.com/UzEE/pokedexcli/internal/api/types/species"
+)
 
 type Pokemon struct {
 	ID                     int                    `json:"id"`
@@ -23,6 +26,9 @@ type Pokemon struct {
 	Stats                  []Stats                `json:"stats"`
 	Types                  []PokemonTypes         `json:"types"`
 	PastTypes              []PokemonPastTypes     `json:"past_types"`
+
+	// Additional fields
+	SpeciesEntry species.PokemonSpecies
 }
 
 type PokemonAbilities struct {

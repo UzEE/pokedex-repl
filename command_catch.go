@@ -30,7 +30,9 @@ func catchCommand(c *config, args ...string) error {
 	if roll < rate {
 		fmt.Printf("%s was caught!\n", mon.Name)
 
-		c.pokedex[pokemonSpecies.Name] = pokemonSpecies
+		mon.SpeciesEntry = pokemonSpecies
+
+		c.pokedex[pokemonSpecies.Name] = mon
 		c.box = append(c.box, mon)
 
 		fmt.Printf("You have registered %d Pokémon Species in your Pokédex.\n", len(c.pokedex))

@@ -6,8 +6,9 @@ import (
 	"github.com/UzEE/pokedexcli/internal/api"
 	"github.com/UzEE/pokedexcli/internal/api/types/location"
 	"github.com/UzEE/pokedexcli/internal/api/types/pokemon"
-	"github.com/UzEE/pokedexcli/internal/api/types/species"
 )
+
+type Pokedex map[string]pokemon.Pokemon
 
 type config struct {
 	client *api.Client
@@ -16,7 +17,7 @@ type config struct {
 	Previous *string
 
 	currentArea location.LocationArea
-	pokedex     map[string]species.PokemonSpecies
+	pokedex     Pokedex
 	box         []pokemon.Pokemon
 }
 
@@ -58,6 +59,18 @@ func loadCommands() map[string]command {
 			description: "Try to catch the specified Pokémon",
 			usage:       "Format: catch <pokemon name>",
 			handler:     catchCommand,
+		},
+		"inspect": {
+			name:        "inspect <pokemon name>",
+			description: "View the Pokédex entry for the specified Pokémon",
+			usage:       "Format: inspect <pokemon name>",
+			handler:     inspectCommand,
+		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "View names of all the Pokémon in your Pokédex",
+			usage:       "Format: pokedex",
+			handler:     pokedexCommand,
 		},
 		"exit": {
 			name:        "exit",
