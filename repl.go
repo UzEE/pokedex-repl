@@ -13,9 +13,6 @@ import (
 	"golang.org/x/term"
 )
 
-const LF = "\n"
-const CRLF = "\r\n"
-
 func startRepl() {
 	commands := loadCommands()
 	client := api.NewClient()
@@ -27,10 +24,8 @@ func startRepl() {
 	}
 
 	if runtime.GOOS == "windows" {
-		config.newline = LF
 		makeStandardTerminal(commands, config)
 	} else {
-		config.newline = CRLF
 		makeRawTerminal(commands, config)
 	}
 }
@@ -89,4 +84,14 @@ func sanitizeInput(input string) (command string, args []string) {
 	output = strings.TrimSpace(output)
 	parsed := strings.Fields(output)
 	return parsed[0], parsed[1:]
+}
+
+func printLine(args ...any) {
+	if len(args) == 0 {
+		fmt.Printf("\r\n")
+		return
+	}
+
+	fmt.Printf(args[0].(string), args[1:]...)
+	fmt.Printf("\r\n")
 }

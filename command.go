@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/UzEE/pokedexcli/internal/api"
 	"github.com/UzEE/pokedexcli/internal/api/types/location"
 	"github.com/UzEE/pokedexcli/internal/api/types/pokemon"
@@ -11,8 +9,7 @@ import (
 type Pokedex map[string]pokemon.Pokemon
 
 type config struct {
-	client  *api.Client
-	newline string
+	client *api.Client
 
 	Next     *string
 	Previous *string
@@ -100,14 +97,4 @@ func handleCommand(cmd string, args []string, commands map[string]command, confi
 	}
 
 	return c.handler(config, args...)
-}
-
-func printLine(args ...any) {
-	if len(args) == 0 {
-		fmt.Printf("\r\n")
-		return
-	}
-
-	fmt.Printf(args[0].(string), args[1:]...)
-	fmt.Printf("\r\n")
 }
