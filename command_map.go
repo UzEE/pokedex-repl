@@ -43,7 +43,7 @@ func makeRequest(url *string, client api.Client) (types.PagedResourceList, error
 
 func handleResponse(list types.PagedResourceList) {
 	for _, loc := range list.Results {
-		fmt.Println(loc.Name)
+		printLine(loc.Name)
 	}
 }
 

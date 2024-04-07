@@ -17,7 +17,7 @@ func catchCommand(c *config, args ...string) error {
 		return err
 	}
 
-	fmt.Printf("Throwing a Pokéball at %s...\n", mon.Name)
+	printLine("Throwing a Pokéball at %s...", mon.Name)
 
 	pokemonSpecies, err := c.client.GetPokemonSpecies(mon.Species.Name)
 	if err != nil {
@@ -28,18 +28,18 @@ func catchCommand(c *config, args ...string) error {
 	roll := rand.Int() % 255
 
 	if roll < rate {
-		fmt.Printf("%s was caught!\n", mon.Name)
+		printLine("%s was caught!", mon.Name)
 
 		mon.SpeciesEntry = pokemonSpecies
 
 		c.pokedex[pokemonSpecies.Name] = mon
 		c.box = append(c.box, mon)
 
-		fmt.Printf("You have registered %d Pokémon Species in your Pokédex.\n", len(c.pokedex))
-		fmt.Printf("You have %d Pokémon in your box.\n", len(c.box))
+		printLine("You have registered %d Pokémon Species in your Pokédex.", len(c.pokedex))
+		printLine("You have %d Pokémon in your box.", len(c.box))
 
 	} else {
-		fmt.Printf("%s broke free! (rate: %d, roll: %d)", mon.Name, rate, roll)
+		printLine("%s broke free! (rate: %d, roll: %d)", mon.Name, rate, roll)
 	}
 
 	return nil

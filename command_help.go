@@ -1,12 +1,10 @@
 package main
 
-import "fmt"
-
 func helpCommand(_ *config, _ ...string) error {
-	fmt.Println()
-	fmt.Println("Welcome to the Pokedex!")
-	fmt.Println("Usage: <cmd> [args]")
-	fmt.Println()
+	printLine()
+	printLine("Welcome to the Pokedex!")
+	printLine("Usage: <cmd> [args]")
+	printLine()
 
 	commands := loadCommands()
 
@@ -25,8 +23,8 @@ func helpCommand(_ *config, _ ...string) error {
 	maxDesc += 4
 
 	for name, cmd := range commands {
-		fmt.Printf(
-			"%s: %*s %s %*s (%s)\n",
+		printLine(
+			"%s: %*s %s %*s (%s)",
 			name,
 			maxName-getLen(name),
 			"",
@@ -37,7 +35,7 @@ func helpCommand(_ *config, _ ...string) error {
 		)
 	}
 
-	fmt.Println()
+	printLine()
 	return nil
 }
 

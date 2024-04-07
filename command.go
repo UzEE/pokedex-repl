@@ -11,7 +11,8 @@ import (
 type Pokedex map[string]pokemon.Pokemon
 
 type config struct {
-	client *api.Client
+	client  *api.Client
+	newline string
 
 	Next     *string
 	Previous *string
@@ -94,9 +95,19 @@ func handleCommand(cmd string, args []string, commands map[string]command, confi
 
 	c, ok := commands[cmd]
 	if !ok {
-		fmt.Printf("Command \"%s\" not found. Please type \"help\" to see a list of supported commands.\n", cmd)
+		printLine("Command \"%s\" not found. Please type \"help\" to see a list of supported commands.", cmd)
 		return nil
 	}
 
 	return c.handler(config, args...)
+}
+
+func printLine(args ...any) {
+	if len(args) == 0 {
+		fmt.Printf("\r\n")
+		return
+	}
+
+	fmt.Printf(args[0].(string), args[1:]...)
+	fmt.Printf("\r\n")
 }

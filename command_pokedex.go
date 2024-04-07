@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 )
 
 func pokedexCommand(c *config, args ...string) error {
@@ -13,14 +12,14 @@ func pokedexCommand(c *config, args ...string) error {
 	count := len(c.pokedex)
 
 	if count == 0 {
-		fmt.Println("Your Pokédex is empty. Go catch some Pokémon!")
+		printLine("Your Pokédex is empty. Go catch some Pokémon!")
 		return nil
 	}
 
-	fmt.Printf("Your have %d Pokémon registered in your Pokédex:\n", count)
+	printLine("Your have %d Pokémon registered in your Pokédex:", count)
 
 	for _, pokemon := range c.pokedex {
-		fmt.Printf(" - %s\n", pokemon.Name)
+		printLine(" - %s", pokemon.Name)
 	}
 
 	return nil

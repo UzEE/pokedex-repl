@@ -14,24 +14,24 @@ func inspectCommand(c *config, args ...string) error {
 		return fmt.Errorf("you haven't caught %s", name)
 	}
 
-	fmt.Println("Name:", entry.Name)
+	printLine("Name:", entry.Name)
 	// print height, weight, abilities, types and stats
-	fmt.Println("Height:", entry.Height)
-	fmt.Println("Weight:", entry.Weight)
+	printLine("Height:", entry.Height)
+	printLine("Weight:", entry.Weight)
 
-	fmt.Println("Abilities:")
+	printLine("Abilities:")
 	for _, ability := range entry.Abilities {
-		fmt.Printf(" - %s\n", ability.Ability.Name)
+		printLine(" - %s", ability.Ability.Name)
 	}
 
-	fmt.Println("Types:")
+	printLine("Types:")
 	for _, t := range entry.Types {
-		fmt.Printf(" - %s\n", t.Type.Name)
+		printLine(" - %s", t.Type.Name)
 	}
 
-	fmt.Println("Stats:")
+	printLine("Stats:")
 	for _, stat := range entry.Stats {
-		fmt.Printf(" - %s: %d\n", stat.Stat.Name, stat.BaseStat)
+		printLine(" - %s: %d", stat.Stat.Name, stat.BaseStat)
 	}
 
 	return nil

@@ -9,7 +9,7 @@ func exploreCommand(c *config, args ...string) error {
 
 	name := args[0]
 
-	fmt.Printf("Exploring %s...\n", name)
+	printLine("Exploring %s...", name)
 
 	area, err := c.client.GetLocationAreaDetails(name)
 	if err != nil {
@@ -17,14 +17,14 @@ func exploreCommand(c *config, args ...string) error {
 	}
 
 	if len(area.PokemonEncounters) == 0 {
-		fmt.Println("No Pokémon encounters found.")
+		printLine("No Pokémon encounters found.")
 		return nil
 	} else {
-		fmt.Println("Found Pokémon:")
+		printLine("Found Pokémon:")
 	}
 
 	for _, encounter := range area.PokemonEncounters {
-		fmt.Printf(" - %s\n", encounter.Pokemon.Name)
+		printLine(" - %s", encounter.Pokemon.Name)
 	}
 
 	c.currentArea = area
