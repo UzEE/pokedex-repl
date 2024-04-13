@@ -9,7 +9,7 @@ import (
 )
 
 func mapCommand(c *config, _ ...string) error {
-	locations, err := makeRequest(c.Next, *c.client)
+	locations, err := makeRequest(c.NextArea, *c.client)
 	if err != nil {
 		return err
 	}
@@ -20,11 +20,11 @@ func mapCommand(c *config, _ ...string) error {
 }
 
 func mapBCommand(c *config, _ ...string) error {
-	if c.Previous == nil {
+	if c.PreviousArea == nil {
 		return errors.New("no previous locations. Use \"map\" command to see the next locations")
 	}
 
-	locations, err := makeRequest(c.Previous, *c.client)
+	locations, err := makeRequest(c.PreviousArea, *c.client)
 	if err != nil {
 		return err
 	}
@@ -50,15 +50,15 @@ func handleResponse(list types.PagedResourceList) {
 func updatePages(c *config, list types.PagedResourceList) {
 	if list.Next != nil {
 		next := *list.Next
-		c.Next = &next
+		c.NextArea = &next
 	} else {
-		c.Next = nil
+		c.NextArea = nil
 	}
 
 	if list.Previous != nil {
 		previous := *list.Previous
-		c.Previous = &previous
+		c.PreviousArea = &previous
 	} else {
-		c.Previous = nil
+		c.PreviousArea = nil
 	}
 }

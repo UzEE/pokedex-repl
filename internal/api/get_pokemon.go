@@ -43,3 +43,19 @@ func (c *Client) GetPokemon(pokemonName string) (pokemon.Pokemon, error) {
 
 	return pokemon, err
 }
+
+func (c *Client) GetPokemonAndSpecies(pokemonName string) (pokemon.Pokemon, error) {
+	pokemon, err := c.GetPokemon(pokemonName)
+	if err != nil {
+		return pokemon, err
+	}
+
+	species, err := c.getSpecies(pokemon.Species.URL)
+	if err != nil {
+		return pokemon, err
+	}
+
+	pokemon.SpeciesEntry = species
+
+	return pokemon, nil
+}

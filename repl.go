@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"runtime"
@@ -13,14 +15,24 @@ import (
 	"golang.org/x/term"
 )
 
+var ErrExitSafe = errors.New("exit safe")
+
 func startRepl() {
-	commands := loadCommands()
+	commands, _, err := loadCommands()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	client := api.NewClient()
 
 	config := &config{
 		client:  &client,
+		prompt:  "Pokédex> ",
 		pokedex: make(Pokedex),
 		box:     make([]pokemon.Pokemon, 0, 30),
+
+		LocationPage:     0,
+		LocationPageSize: 20,
 	}
 
 	if runtime.GOOS == "windows" {
@@ -28,6 +40,8 @@ func startRepl() {
 	} else {
 		makeRawTerminal(commands, config)
 	}
+
+	os.Exit(0)
 }
 
 func makeRawTerminal(commands map[string]command, config *config) {
@@ -36,20 +50,40 @@ func makeRawTerminal(commands map[string]command, config *config) {
 		log.Fatal(err)
 	}
 
+	// we need to restore the terminal to its original state (cooked mode) before exiting
 	defer term.Restore(int(os.Stdin.Fd()), oldState)
 
-	terminal := term.NewTerminal(os.Stdin, "\r\nPokédex> ")
+	terminal := term.NewTerminal(os.Stdin, "\r\n"+config.prompt)
+	config.colors = *terminal.Escape
 
 	for {
+		terminal.SetPrompt("\r\n" + config.prompt)
 		line, err := terminal.ReadLine()
+
 		if err != nil {
-			log.Fatal(err)
+
+			// handle Ctrl+C and Ctrl+D gracefully
+			if err == io.EOF {
+				printLine("Goodbye!")
+			} else {
+				fmt.Printf("\r\n%v", err)
+			}
+
+			return
+		}
+
+		if line == "" {
+			continue
 		}
 
 		cmd, args := sanitizeInput(line)
 
 		err = handleCommand(cmd, args, commands, config)
 		if err != nil {
+			if err == ErrExitSafe {
+				return
+			}
+
 			log.Println(err)
 		}
 	}
@@ -57,7 +91,7 @@ func makeRawTerminal(commands map[string]command, config *config) {
 
 func makeStandardTerminal(commands map[string]command, config *config) {
 	for {
-		fmt.Printf("\nPokédex> ")
+		fmt.Printf("\n%s", config.prompt)
 		cmd, args := readInput()
 
 		err := handleCommand(cmd, args, commands, config)
@@ -92,6 +126,26 @@ func printLine(args ...any) {
 		return
 	}
 
-	fmt.Printf(args[0].(string), args[1:]...)
+	parts := make([]any, 0, len(args))
+	for _, val := range args {
+		str, ok := val.(string)
+		if ok {
+			str = strings.ReplaceAll(str, "\n", "\r\n")
+			parts = append(parts, str)
+		} else {
+			parts = append(parts, val)
+		}
+	}
+
+	fmt.Printf(parts[0].(string), parts[1:]...)
 	fmt.Printf("\r\n")
+}
+
+func stripBreaks(s string) string {
+	s = strings.ReplaceAll(s, "\n", " ")
+	s = strings.ReplaceAll(s, "\r\n", " ")
+	s = strings.ReplaceAll(s, "\t", " ")
+	s = strings.ReplaceAll(s, "\f", " ")
+
+	return s
 }

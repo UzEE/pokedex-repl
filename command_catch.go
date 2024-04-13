@@ -12,23 +12,22 @@ func catchCommand(c *config, args ...string) error {
 
 	name := args[0]
 
-	mon, err := c.client.GetPokemon(name)
+	mon, err := c.client.GetPokemonAndSpecies(name)
 	if err != nil {
 		return err
 	}
 
-	printLine("Throwing a Pokéball at %s...", mon.Name)
+	formattedName := getFormattedName(c, mon)
 
-	pokemonSpecies, err := c.client.GetPokemonSpecies(mon.Species.Name)
-	if err != nil {
-		return err
-	}
+	printLine("Throwing a Pokéball at %s...", formattedName)
+
+	pokemonSpecies := mon.SpeciesEntry
 
 	rate := pokemonSpecies.CaptureRate
 	roll := rand.Int() % 255
 
 	if roll < rate {
-		printLine("%s was caught!", mon.Name)
+		printLine("%s was caught! (rate: %d, roll: %d)", formattedName, rate, roll)
 
 		mon.SpeciesEntry = pokemonSpecies
 
@@ -38,8 +37,19 @@ func catchCommand(c *config, args ...string) error {
 		printLine("You have registered %d Pokémon Species in your Pokédex.", len(c.pokedex))
 		printLine("You have %d Pokémon in your box.", len(c.box))
 
+		if c.currentEncounter != nil && c.currentEncounter.Name == mon.Name {
+			c.currentEncounter = nil
+		}
+
+		c.latestCaught = &pokemonSpecies.Name
+
+		printLine()
+		printLine("Type:")
+		printLine("  %sinspect%s to view the Pokédex entry on %s", c.colors.Blue, c.colors.Reset, formattedName)
+		printLine("  %spokedex%s to view a list of all Pokémon in your Pokédex", c.colors.Blue, c.colors.Reset)
+
 	} else {
-		printLine("%s broke free! (rate: %d, roll: %d)", mon.Name, rate, roll)
+		printLine("%s broke free! (rate: %d, roll: %d)", formattedName, rate, roll)
 	}
 
 	return nil

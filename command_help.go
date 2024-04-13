@@ -6,7 +6,10 @@ func helpCommand(_ *config, _ ...string) error {
 	printLine("Usage: <cmd> [args]")
 	printLine()
 
-	commands := loadCommands()
+	commands, command_order, err := loadCommands()
+	if err != nil {
+		return err
+	}
 
 	maxName, maxDesc := 0, 0
 	for name, cmd := range commands {
@@ -22,16 +25,16 @@ func helpCommand(_ *config, _ ...string) error {
 	maxName += 4
 	maxDesc += 4
 
-	for name, cmd := range commands {
+	for _, name := range command_order {
 		printLine(
 			"%s: %*s %s %*s (%s)",
 			name,
 			maxName-getLen(name),
 			"",
-			cmd.description,
-			maxDesc-getLen(cmd.description),
+			commands[name].description,
+			maxDesc-getLen(commands[name].description),
 			"",
-			cmd.usage,
+			commands[name].usage,
 		)
 	}
 

@@ -19,7 +19,7 @@ func pokedexCommand(c *config, args ...string) error {
 	printLine("Your have %d Pokémon registered in your Pokédex:", count)
 
 	for _, pokemon := range c.pokedex {
-		printLine(" - %s", pokemon.Name)
+		printLine(" - %s", getFormattedName(c, pokemon))
 	}
 
 	return nil
